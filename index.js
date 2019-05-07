@@ -54,7 +54,7 @@ const LaunchRequestHandler = {
         return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const speechText = "no";
+        const speechText = "Ask me for a drill tweet";
         return handlerInput.responseBuilder
             .speak(speechText)
             .reprompt(speechText)
