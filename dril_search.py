@@ -1,19 +1,35 @@
 
-import json
+
+import os
 from atproto import Client
 from atproto_client.namespaces.sync_ns import AppBskyFeedNamespace
 from atproto_client.models.app.bsky.feed.search_posts import Params
+from atproto.exceptions import AtProtocolError
+from dotenv import load_dotenv
+
+
 
 def search_dril_posts(search_term: str):
-    BLUESKY_HANDLE = "falldownbear.bsky.social"
-    BLUESKY_APP_PASSWORD = "irto-zi4x-f4ax-26su"
+    load_dotenv()
+
+    BLUESKY_HANDLE = os.getenv("BLUESKY_HANDLE")
+    BLUESKY_APP_PASSWORD = os.getenv("BLUESKY_APP_PASSWORD")
 
     client = Client()
-    client.login(BLUESKY_HANDLE, BLUESKY_APP_PASSWORD)
+
+    try:
+        client.login(BLUESKY_HANDLE, BLUESKY_APP_PASSWORD)
+    except (ValueError, AtProtocolError):
+        print("Login failed")
+        return
 
     ns = AppBskyFeedNamespace(client)
 
-    resp = ns.search_posts(Params(author="dril.bsky.social", q=search_term))
+    try:
+        resp = ns.search_posts(Params(author="dril.bsky.social", q=search_term))
+    except AtProtocolError:
+        print("Search failed")
+        return
 
     if resp:
         for post in resp.posts:
